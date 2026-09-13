@@ -50,7 +50,7 @@ Separate from the B2B leads funnel. Nav → **Jobs** / **Auto-apply**.
 - Stages: `saved → applied → screening → interview → offer` (or rejected/withdrawn)
 - Fit score uses stack match, Moldova eligibility, region, salary, seniority in title
 - Curated list + rewritten CV: `docs/job-hunt/`
-- **Auto-apply:** profile + PDF + cover letters; run with `run auto-apply batch` (see `scripts/auto-apply-engine-prompt.txt`). Skips LinkedIn Easy Apply bots; uses ATS/email.
+- **Auto-apply:** profile + PDF + cover letters; say **`run auto-apply batch`** (skill: `.cursor/skills/auto-apply`). Skips LinkedIn Easy Apply bots; uses ATS/email.
 
 ## Notes
 

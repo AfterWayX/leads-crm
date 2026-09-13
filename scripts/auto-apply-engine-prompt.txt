@@ -1,5 +1,6 @@
 Name: Auto-apply engine
 Trigger phrase: "run auto-apply batch"
+Skill: .cursor/skills/auto-apply/SKILL.md (agent auto-runs when user asks)
 Schedule (optional Cursor Automation): daily 10:00 (cron: 0 10 * * 1-5)
 Tools: Supabase MCP (leads-crm enybzqvjrjdpepikjmwl), browser, Gmail (send with PDF attachment when email apply), Web search
 Repo assets: docs/job-hunt/David_Beregoi_CV.pdf , docs/job-hunt/David_Beregoi_CV.md , scripts/auto-apply-engine-prompt.txt
@@ -8,6 +9,8 @@ GOAL
 Apply to remote senior full-stack roles for David Beregoi WITHOUT asking him per form field.
 Use his applicant_profile + answer_bank + cover_letter + PDF CV.
 Stay within daily_apply_cap from auto_apply_capacity().
+
+Follow .cursor/skills/auto-apply/SKILL.md as the source of truth for the batch workflow.
 
 HARD RULES
 1) NEVER automate LinkedIn Easy Apply submit. If only LinkedIn apply exists → set apply_queue_status='skipped' or 'blocked' with reason, move on.
