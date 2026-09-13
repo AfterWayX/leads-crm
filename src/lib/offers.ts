@@ -34,3 +34,20 @@ export const STAGE_LABELS: Record<string, string> = {
   client: "Client",
   lost: "Lost",
 };
+
+export const OUTREACH_STATUS_LABELS: Record<string, string> = {
+  queued: "Queued",
+  pending: "Pending invite",
+  accepted: "Accepted",
+  ignored: "Ignored",
+  draft: "Draft",
+  approved: "Approved",
+  sent: "Sent",
+  replied: "Replied",
+  bounced: "Bounced",
+};
+
+export const OUTREACH_KIND_LABELS: Record<string, string> = {
+  invite: "Invite",
+  message: "Message",
+};

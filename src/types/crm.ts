@@ -62,7 +62,19 @@ export type Temperature = (typeof TEMPERATURES)[number];
 export const OUTREACH_CHANNELS = ["linkedin", "email", "call"] as const;
 export type OutreachChannel = (typeof OUTREACH_CHANNELS)[number];
 
-export const OUTREACH_STATUSES = [
+export const OUTREACH_KINDS = ["invite", "message"] as const;
+export type OutreachKind = (typeof OUTREACH_KINDS)[number];
+
+/** Invite lifecycle: queued → pending → accepted | ignored */
+export const INVITE_STATUSES = [
+  "queued",
+  "pending",
+  "accepted",
+  "ignored",
+] as const;
+
+/** Message lifecycle: draft → approved → sent → replied | bounced */
+export const MESSAGE_STATUSES = [
   "draft",
   "approved",
   "sent",
@@ -70,7 +82,21 @@ export const OUTREACH_STATUSES = [
   "bounced",
 ] as const;
 
+export const OUTREACH_STATUSES = [
+  ...INVITE_STATUSES,
+  ...MESSAGE_STATUSES,
+] as const;
+
 export type OutreachStatus = (typeof OUTREACH_STATUSES)[number];
+
+export type InviteCapacity = {
+  sent_today: number;
+  sent_7d: number;
+  daily_cap: number;
+  weekly_cap: number;
+  remaining_today: number;
+  remaining_week: number;
+};
 
 export const SOURCES = [
   "Dealroom",
@@ -130,6 +156,7 @@ export type Contact = {
   email: string | null;
   phone: string | null;
   is_primary: boolean;
+  linkedin_verified: boolean;
   created_at: string;
 };
 
@@ -138,6 +165,7 @@ export type Outreach = {
   company_id: string;
   contact_id: string | null;
   channel: OutreachChannel | string;
+  kind: OutreachKind | string;
   status: OutreachStatus | string;
   subject: string | null;
   body: string | null;

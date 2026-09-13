@@ -75,3 +75,53 @@ Would you be open to a short conversation?`;
 
   return { subject, body };
 }
+
+const DM_OFFER_LINES: Record<OfferType, string> = {
+  team_extension:
+    "We embed senior React/Node/AI engineers with product teams that are scaling.",
+  mvp: "We help teams take specs to production — frontend, backend and AI features.",
+  ai_dev:
+    "We build LLM workflows, RAG and agent-style automation on React/Node stacks.",
+  legacy_perf:
+    "We modernize React/Node systems for performance without freezing product work.",
+};
+
+function dmOpener(ctx: PitchContext): string {
+  switch (ctx.trigger) {
+    case "funding":
+      return ctx.funding
+        ? `Congrats on the ${ctx.funding} raise at ${ctx.company}.`
+        : `Congrats on the recent raise at ${ctx.company}.`;
+    case "hiring":
+      return `Noticed ${ctx.company} is hiring engineers${
+        ctx.roles ? ` (${ctx.roles})` : ""
+      }.`;
+    case "product_launch":
+      return `Saw the recent launch at ${ctx.company} — looks sharp.`;
+    case "small_team":
+      return `Been following ${ctx.company} — impressive what a lean team is shipping.`;
+    default:
+      return `Been following ${ctx.company}.`;
+  }
+}
+
+/** Short post-accept LinkedIn DM (~400 chars). */
+export function generateLinkedInDm(ctx: PitchContext): {
+  subject: string;
+  body: string;
+} {
+  const offerKey = (ctx.offer as OfferType) || "team_extension";
+  const offerLine = DM_OFFER_LINES[offerKey] || DM_OFFER_LINES.team_extension;
+  const first = (ctx.name || "there").split(/\s+/)[0];
+
+  const body = `Hi ${first}, thanks for connecting.
+
+${dmOpener(ctx)} ${offerLine}
+
+Open to a short chat if useful?`;
+
+  return {
+    subject: `DM — ${ctx.company}`,
+    body: body.slice(0, 400),
+  };
+}
