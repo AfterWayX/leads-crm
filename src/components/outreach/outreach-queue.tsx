@@ -11,7 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LinkedInContactLink } from "@/components/companies/linkedin-contact-link";
 import { updateOutreachStatusAction } from "@/app/(app)/companies/actions";
+import { OUTREACH_STATUS_LABELS } from "@/lib/offers";
 
 type Row = {
   id: string;
@@ -23,6 +25,7 @@ type Row = {
   follow_up_at: string | null;
   created_at: string;
   companies: { name: string } | null;
+  contacts: { name: string; linkedin_url: string | null } | null;
 };
 
 function OutreachSection({
@@ -59,9 +62,19 @@ function OutreachSection({
                 >
                   {row.companies?.name || "Company"}
                 </Link>
+                {row.contacts?.name && (
+                  <div className="mt-0.5 text-sm">
+                    <LinkedInContactLink
+                      name={row.contacts.name}
+                      href={row.contacts.linkedin_url}
+                    />
+                  </div>
+                )}
                 <div className="mt-1 flex gap-2">
                   <Badge variant="outline">{row.channel}</Badge>
-                  <Badge>{row.status}</Badge>
+                  <Badge>
+                    {OUTREACH_STATUS_LABELS[row.status] || row.status}
+                  </Badge>
                   {row.follow_up_at && (
                     <span className="text-xs text-amber-700">
                       follow-up {row.follow_up_at}
