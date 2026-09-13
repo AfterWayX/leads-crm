@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,12 @@ import { generatePitch } from "@/lib/templates";
 import { formatFunding } from "@/lib/format";
 import type { Company, Contact } from "@/types/crm";
 import { createOutreachDraftAction } from "@/app/(app)/companies/actions";
+
+function defaultFollowUpDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  return d.toISOString().slice(0, 10);
+}
 
 export function PitchGenerator({
   company,
@@ -20,10 +26,12 @@ export function PitchGenerator({
   const primary = contacts.find((c) => c.is_primary) || contacts[0];
   const [contactId, setContactId] = useState(primary?.id || "");
   const [channel, setChannel] = useState("linkedin");
-  const [followUp, setFollowUp] = useState(
-    new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
-  );
+  const [followUp, setFollowUp] = useState("");
   const contact = contacts.find((c) => c.id === contactId);
+
+  useEffect(() => {
+    setFollowUp(defaultFollowUpDate());
+  }, []);
 
   const funding = formatFunding(
     company.funding_amount_eur,
