@@ -9,6 +9,7 @@ import {
   deleteJobApplicationAction,
   updateJobApplicationAction,
 } from "../actions";
+import { regenerateMaterialsAction } from "../auto-apply-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +23,7 @@ import {
   type JobApplication,
   type JobStage,
 } from "@/types/crm";
+import { APPLY_QUEUE_LABELS, type ApplyQueueStatus } from "@/lib/auto-apply";
 
 type Params = Promise<{ id: string }>;
 
@@ -80,6 +82,37 @@ export default async function JobDetailPage({ params }: { params: Params }) {
         </CardHeader>
         <CardContent>
           <JobStageButtons id={job.id} current={String(job.stage)} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between gap-3">
+          <div>
+            <CardTitle>Auto-apply materials</CardTitle>
+            <CardDescription>
+              Mode: {job.apply_mode || "ats"} · Queue:{" "}
+              {APPLY_QUEUE_LABELS[
+                (job.apply_queue_status || "idle") as ApplyQueueStatus
+              ]}
+              {job.blocked_reason ? ` · ${job.blocked_reason}` : ""}
+            </CardDescription>
+          </div>
+          <form action={regenerateMaterialsAction.bind(null, id)}>
+            <Button type="submit" variant="outline" size="sm">
+              Regenerate
+            </Button>
+          </form>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {job.cover_letter ? (
+            <pre className="whitespace-pre-wrap rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm">
+              {job.cover_letter}
+            </pre>
+          ) : (
+            <p className="text-sm text-zinc-500">
+              No cover letter yet. Regenerate or run Prepare next batch.
+            </p>
+          )}
         </CardContent>
       </Card>
 

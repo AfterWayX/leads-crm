@@ -235,6 +235,16 @@ export type JobApplication = {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  apply_mode?: string | null;
+  apply_queue_status?: string | null;
+  company_apply_url?: string | null;
+  careers_email?: string | null;
+  cover_letter?: string | null;
+  tailored_answers?: Record<string, string> | null;
+  materials_ready_at?: string | null;
+  blocked_reason?: string | null;
+  last_apply_attempt_at?: string | null;
+  apply_result?: string | null;
 };
 
 export type JobApplicationStats = {
