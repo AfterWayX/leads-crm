@@ -185,3 +185,63 @@ export type DashboardStats = {
   total: number;
   hot_or_good: number;
 };
+
+/** Personal job-hunt tracker (separate from B2B leads funnel) */
+export const JOB_STAGES = [
+  "saved",
+  "applied",
+  "screening",
+  "interview",
+  "offer",
+  "rejected",
+  "withdrawn",
+] as const;
+
+export type JobStage = (typeof JOB_STAGES)[number];
+
+export const JOB_STAGE_LABELS: Record<JobStage, string> = {
+  saved: "Saved",
+  applied: "Applied",
+  screening: "Screening",
+  interview: "Interview",
+  offer: "Offer",
+  rejected: "Rejected",
+  withdrawn: "Withdrawn",
+};
+
+export const JOB_PRIORITIES = ["A", "B", "C"] as const;
+export type JobPriority = (typeof JOB_PRIORITIES)[number];
+
+export const JOB_REGIONS = ["EMEA", "US", "EMEA/US", "Worldwide"] as const;
+
+export type JobApplication = {
+  id: string;
+  company_name: string;
+  title: string;
+  apply_url: string | null;
+  source: string | null;
+  region: string | null;
+  salary_min_usd: number | null;
+  salary_max_usd: number | null;
+  moldova_eligible: boolean;
+  tech_stack: string[] | null;
+  fit_score: number;
+  temperature: Temperature | string | null;
+  stage: JobStage | string;
+  priority: JobPriority | string;
+  notes: string | null;
+  applied_at: string | null;
+  follow_up_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type JobApplicationStats = {
+  by_stage: Record<string, number>;
+  by_temperature: Record<string, number>;
+  total: number;
+  hot_or_good: number;
+  applied_count: number;
+  follow_ups_due: number;
+};

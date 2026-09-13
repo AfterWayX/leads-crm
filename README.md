@@ -38,6 +38,19 @@ Temperatures: **HOT** 8–10 · **GOOD** 6–7 · **MAYBE** 4–5 · **IGNORE** 
 
 30 AI/SaaS · 20 Fintech · 20 Logistics · 20 B2B SaaS · 10 wild cards
 
+## Job hunt tracker
+
+Separate from the B2B leads funnel. Nav → **Jobs**.
+
+```bash
+# Apply migrations in Supabase (includes job_applications + seed roles)
+# supabase db push   # or run SQL in Dashboard
+```
+
+- Stages: `saved → applied → screening → interview → offer` (or rejected/withdrawn)
+- Fit score uses stack match, Moldova eligibility, region, salary, seniority in title
+- Curated list + rewritten CV: `docs/job-hunt/`
+
 ## Notes
 
 - Outreach is **manual**: generate draft → approve → you send → mark sent.
