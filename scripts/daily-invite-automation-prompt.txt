@@ -1,0 +1,32 @@
+Name: Daily invite engine
+Schedule: every day at 09:00 (cron: 0 9 * * *)
+Tools: Supabase MCP (leads-crm project enybzqvjrjdpepikjmwl)
+Never touch LinkedIn — CRM only.
+
+Daily instructions:
+
+1) Contact top-up
+- Query companies with score >= 6 that have zero contacts.
+- For each (prioritize HOT/GOOD, highest score), research founder or CTO and their LinkedIn URL (public web search).
+- Insert into public.contacts: company_id, name, title, linkedin_url, is_primary=true, linkedin_verified=false.
+- Target: keep at least 15 contacts with linkedin_url who are not blocked by an existing invite.
+
+2) Build today's invite queue
+- Call RPC public.invite_capacity().
+- remaining = min(remaining_today, remaining_week). If 0, skip queue build.
+- Find eligible contacts: have linkedin_url; company has no invite with status in (queued, pending, accepted); contact has no invite in the last 21 days.
+- Prefer primary contacts, then score desc, temperature HOT→GOOD→MAYBE.
+- Insert up to `remaining` rows into public.outreach:
+  kind='invite', status='queued', channel='linkedin',
+  subject='LinkedIn invite — {name}',
+  body='Queued for today\'s Daily 10. Send without a note.'
+
+3) Draft messages for newly accepted invites
+- Find outreach where kind='invite' and status='accepted' and updated/created recently, with no kind='message' row yet for that contact_id in status draft/approved/sent.
+- For each, load company (name, funding, hiring_roles, offer_type, trigger_type) and contact name.
+- Insert outreach kind='message', status='draft', channel='linkedin' with a short LinkedIn DM (<400 chars):
+  thanks for connecting + one trigger line + one offer line + soft ask for a short chat.
+
+4) Report summary
+- contacts added, invites queued, pending invite count, message drafts waiting for approval.
+- Remind: user runs "run today's batch" in Cursor to send invites on LinkedIn.
