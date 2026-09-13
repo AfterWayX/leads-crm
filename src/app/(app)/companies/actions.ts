@@ -272,6 +272,7 @@ export async function createOutreachDraftAction(
     company_id: companyId,
     contact_id: emptyToNull(formData.get("contact_id")),
     channel: emptyToNull(formData.get("channel")) || "linkedin",
+    kind: "message",
     status: "draft",
     subject: emptyToNull(formData.get("subject")),
     body: emptyToNull(formData.get("body")),
@@ -283,6 +284,7 @@ export async function createOutreachDraftAction(
 
   revalidatePath(`/companies/${companyId}`);
   revalidatePath("/outreach");
+  revalidatePath("/today");
   return { ok: true };
 }
 
@@ -293,13 +295,23 @@ export async function updateOutreachStatusAction(
 ) {
   const supabase = await createClient();
   const patch: Record<string, unknown> = { status };
-  if (status === "sent") patch.sent_at = new Date().toISOString();
+  if (status === "pending" || status === "sent" || status === "accepted") {
+    // Don't overwrite sent_at if already set for accepted
+    if (status === "pending" || status === "sent") {
+      patch.sent_at = new Date().toISOString();
+    }
+  }
   if (status === "replied") patch.replied_at = new Date().toISOString();
+  if (status === "pending") patch.kind = "invite";
+  if (status === "accepted") patch.kind = "invite";
 
   const { error } = await supabase.from("outreach").update(patch).eq("id", id);
   if (error) return { error: error.message };
 
-  if (status === "sent" && companyId) {
+  if (
+    (status === "pending" || status === "sent" || status === "accepted") &&
+    companyId
+  ) {
     await supabase
       .from("companies")
       .update({ stage: "contacted" })
@@ -314,6 +326,7 @@ export async function updateOutreachStatusAction(
   }
 
   revalidatePath("/outreach");
+  revalidatePath("/today");
   revalidatePath("/pipeline");
   revalidatePath("/dashboard");
   if (companyId) revalidatePath(`/companies/${companyId}`);

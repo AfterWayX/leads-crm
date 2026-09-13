@@ -19,7 +19,7 @@ import {
   recalculateScoreAction,
   deleteCompanyAction,
 } from "../actions";
-import { OFFER_LABELS, TRIGGER_LABELS, STAGE_LABELS } from "@/lib/offers";
+import { OFFER_LABELS, TRIGGER_LABELS, STAGE_LABELS, OUTREACH_STATUS_LABELS } from "@/lib/offers";
 import { formatFunding } from "@/lib/format";
 import type { Company, Contact, Outreach, OfferType, TriggerType } from "@/types/crm";
 
@@ -198,7 +198,9 @@ export default async function CompanyDetailPage({
                   >
                     <div className="flex flex-wrap items-center gap-2 text-sm">
                       <Badge variant="outline">{o.channel}</Badge>
-                      <Badge>{o.status}</Badge>
+                      <Badge>
+                        {OUTREACH_STATUS_LABELS[o.status] || o.status}
+                      </Badge>
                       <span className="text-zinc-500">
                         {new Date(o.created_at).toLocaleString()}
                       </span>
