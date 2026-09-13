@@ -4,11 +4,17 @@ import { useTransition } from "react";
 import Link from "next/link";
 import { updateCompanyStageAction } from "@/app/(app)/companies/actions";
 import { TemperatureBadge } from "@/components/companies/temperature-badge";
+import { LinkedInContactLink } from "@/components/companies/linkedin-contact-link";
+import { pickLinkedInContact, type ContactLite } from "@/lib/contacts";
 import { FUNNEL_STAGES } from "@/types/crm";
 import { STAGE_LABELS } from "@/lib/offers";
 import type { Company } from "@/types/crm";
 
-export function PipelineBoard({ companies }: { companies: Company[] }) {
+export type PipelineCompany = Company & {
+  contacts?: ContactLite[] | null;
+};
+
+export function PipelineBoard({ companies }: { companies: PipelineCompany[] }) {
   const [pending, startTransition] = useTransition();
 
   const byStage = FUNNEL_STAGES.reduce(
@@ -16,7 +22,7 @@ export function PipelineBoard({ companies }: { companies: Company[] }) {
       acc[stage] = companies.filter((c) => c.stage === stage);
       return acc;
     },
-    {} as Record<string, Company[]>
+    {} as Record<string, PipelineCompany[]>
   );
 
   function onDrop(stage: string, companyId: string) {
@@ -50,29 +56,41 @@ export function PipelineBoard({ companies }: { companies: Company[] }) {
             </span>
           </div>
           <div className={`min-h-[120px] space-y-2 p-2 ${pending ? "opacity-70" : ""}`}>
-            {(byStage[stage] || []).map((c) => (
-              <div
-                key={c.id}
-                draggable
-                onDragStart={(e) => {
-                  e.dataTransfer.setData("text/company-id", c.id);
-                }}
-                className="cursor-grab rounded-md border border-zinc-100 bg-zinc-50 p-2 active:cursor-grabbing"
-              >
-                <Link
-                  href={`/companies/${c.id}`}
-                  className="text-sm font-medium hover:underline"
+            {(byStage[stage] || []).map((c) => {
+              const contact = pickLinkedInContact(c.contacts);
+              return (
+                <div
+                  key={c.id}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData("text/company-id", c.id);
+                  }}
+                  className="cursor-grab rounded-md border border-zinc-100 bg-zinc-50 p-2 active:cursor-grabbing"
                 >
-                  {c.name}
-                </Link>
-                <div className="mt-1 flex items-center justify-between gap-1">
-                  <span className="text-xs tabular-nums text-zinc-500">
-                    {c.score}/10
-                  </span>
-                  <TemperatureBadge value={c.temperature} />
+                  <Link
+                    href={`/companies/${c.id}`}
+                    className="text-sm font-medium hover:underline"
+                  >
+                    {c.name}
+                  </Link>
+                  {contact && (
+                    <div className="mt-1 text-xs">
+                      <LinkedInContactLink
+                        name={contact.name}
+                        href={contact.linkedin_url}
+                        className="text-xs"
+                      />
+                    </div>
+                  )}
+                  <div className="mt-1 flex items-center justify-between gap-1">
+                    <span className="text-xs tabular-nums text-zinc-500">
+                      {c.score}/10
+                    </span>
+                    <TemperatureBadge value={c.temperature} />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ))}

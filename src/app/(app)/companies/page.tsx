@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TemperatureBadge } from "@/components/companies/temperature-badge";
+import { LinkedInContactLink } from "@/components/companies/linkedin-contact-link";
+import { pickLinkedInContact, type ContactLite } from "@/lib/contacts";
 import { formatFunding } from "@/lib/format";
 import { SEGMENT_LABELS, SEGMENTS, FUNNEL_STAGES, TEMPERATURES } from "@/types/crm";
 import { STAGE_LABELS } from "@/lib/offers";
@@ -24,6 +26,10 @@ type SearchParams = Promise<{
   min_score?: string;
 }>;
 
+type CompanyRow = Company & {
+  contacts?: ContactLite[] | null;
+};
+
 export default async function CompaniesPage({
   searchParams,
 }: {
@@ -34,7 +40,7 @@ export default async function CompaniesPage({
 
   let query = supabase
     .from("companies")
-    .select("*")
+    .select("*, contacts(name, linkedin_url, is_primary)")
     .order("score", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -47,7 +53,7 @@ export default async function CompaniesPage({
   if (sp.min_score) query = query.gte("score", Number(sp.min_score));
 
   const { data: companies } = await query;
-  const rows = (companies || []) as Company[];
+  const rows = (companies || []) as CompanyRow[];
 
   return (
     <div className="space-y-6">
@@ -133,6 +139,7 @@ export default async function CompaniesPage({
           <TableHeader>
             <TableRow>
               <TableHead>Company</TableHead>
+              <TableHead>LinkedIn contact</TableHead>
               <TableHead>Country</TableHead>
               <TableHead>Segment</TableHead>
               <TableHead>Funding</TableHead>
@@ -145,7 +152,7 @@ export default async function CompaniesPage({
           <TableBody>
             {rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="py-10 text-center text-zinc-500">
+                <TableCell colSpan={9} className="py-10 text-center text-zinc-500">
                   No companies yet.{" "}
                   <Link href="/companies/new" className="underline">
                     Add your first lead
@@ -153,43 +160,57 @@ export default async function CompaniesPage({
                 </TableCell>
               </TableRow>
             )}
-            {rows.map((c) => (
-              <TableRow key={c.id} className="hover:bg-zinc-50">
-                <TableCell>
-                  <Link
-                    href={`/companies/${c.id}`}
-                    className="font-medium hover:underline"
-                  >
-                    {c.name}
-                  </Link>
-                </TableCell>
-                <TableCell>{c.country || "—"}</TableCell>
-                <TableCell>
-                  {c.segment
-                    ? SEGMENT_LABELS[c.segment as keyof typeof SEGMENT_LABELS] ||
-                      c.segment
-                    : "—"}
-                </TableCell>
-                <TableCell>
-                  {formatFunding(c.funding_amount_eur, c.funding_round)}
-                </TableCell>
-                <TableCell>{c.employees ?? "—"}</TableCell>
-                <TableCell>
-                  {c.hiring
-                    ? c.hiring_count
-                      ? `${c.hiring_count} roles`
-                      : "Yes"
-                    : "—"}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="tabular-nums font-medium">{c.score}/10</span>
-                    <TemperatureBadge value={c.temperature} />
-                  </div>
-                </TableCell>
-                <TableCell>{STAGE_LABELS[c.stage] || c.stage}</TableCell>
-              </TableRow>
-            ))}
+            {rows.map((c) => {
+              const contact = pickLinkedInContact(c.contacts);
+              return (
+                <TableRow key={c.id} className="hover:bg-zinc-50">
+                  <TableCell>
+                    <Link
+                      href={`/companies/${c.id}`}
+                      className="font-medium hover:underline"
+                    >
+                      {c.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    {contact ? (
+                      <LinkedInContactLink
+                        name={contact.name}
+                        href={contact.linkedin_url}
+                        className="text-sm"
+                      />
+                    ) : (
+                      <span className="text-zinc-400">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>{c.country || "—"}</TableCell>
+                  <TableCell>
+                    {c.segment
+                      ? SEGMENT_LABELS[c.segment as keyof typeof SEGMENT_LABELS] ||
+                        c.segment
+                      : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {formatFunding(c.funding_amount_eur, c.funding_round)}
+                  </TableCell>
+                  <TableCell>{c.employees ?? "—"}</TableCell>
+                  <TableCell>
+                    {c.hiring
+                      ? c.hiring_count
+                        ? `${c.hiring_count} roles`
+                        : "Yes"
+                      : "—"}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="tabular-nums font-medium">{c.score}/10</span>
+                      <TemperatureBadge value={c.temperature} />
+                    </div>
+                  </TableCell>
+                  <TableCell>{STAGE_LABELS[c.stage] || c.stage}</TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

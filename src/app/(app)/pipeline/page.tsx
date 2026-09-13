@@ -1,12 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
-import { PipelineBoard } from "@/components/pipeline/pipeline-board";
-import type { Company } from "@/types/crm";
+import {
+  PipelineBoard,
+  type PipelineCompany,
+} from "@/components/pipeline/pipeline-board";
 
 export default async function PipelinePage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("companies")
-    .select("*")
+    .select("*, contacts(name, linkedin_url, is_primary)")
     .order("score", { ascending: false });
 
   return (
@@ -17,7 +19,7 @@ export default async function PipelinePage() {
           Drag companies between funnel stages. Focus on score ≥ 6.
         </p>
       </div>
-      <PipelineBoard companies={(data || []) as Company[]} />
+      <PipelineBoard companies={(data || []) as PipelineCompany[]} />
     </div>
   );
 }
