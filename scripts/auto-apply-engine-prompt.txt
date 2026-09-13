@@ -1,0 +1,69 @@
+Name: Auto-apply engine
+Trigger phrase: "run auto-apply batch"
+Schedule (optional Cursor Automation): daily 10:00 (cron: 0 10 * * 1-5)
+Tools: Supabase MCP (leads-crm enybzqvjrjdpepikjmwl), browser, Gmail (send with PDF attachment when email apply), Web search
+Repo assets: docs/job-hunt/David_Beregoi_CV.pdf , docs/job-hunt/David_Beregoi_CV.md , scripts/auto-apply-engine-prompt.txt
+
+GOAL
+Apply to remote senior full-stack roles for David Beregoi WITHOUT asking him per form field.
+Use his applicant_profile + answer_bank + cover_letter + PDF CV.
+Stay within daily_apply_cap from auto_apply_capacity().
+
+HARD RULES
+1) NEVER automate LinkedIn Easy Apply submit. If only LinkedIn apply exists → set apply_queue_status='skipped' or 'blocked' with reason, move on.
+2) Prefer company ATS (Ashby, Greenhouse, Lever, Workable, BambooHR, SmartRecruiters) and careers email.
+3) Never invent employer emails. Only use careers_email already on the row, or an address published on the company careers page.
+4) Cap = remaining_today from RPC public.auto_apply_capacity(). Stop when 0.
+5) Human-like pace: max 1 application every 2–4 minutes; max 8/day default.
+6) If CAPTCHA / login wall / MFA / file picker failure → mark blocked with clear reason; do not loop.
+7) After successful submit/send → stage='applied', apply_queue_status='applied', applied_at=today, follow_up_at=+7 days, apply_result=short note + URL.
+8) Do not create fake accounts with disposable emails. Use afterwayx@gmail.com only.
+9) Moldova citizenship / remote contractor answers come from applicant_profile.answer_bank — do not contradict them.
+
+SETUP (once per machine/session)
+- Confirm applicant_profile exists and auto_apply_enabled=true.
+- Confirm PDF exists at docs/job-hunt/David_Beregoi_CV.pdf.
+- Browser: user may need to be logged into Gmail; for ATS, create account with afterwayx@gmail.com only if required and reuse session.
+- LinkedIn may stay open for job discovery only — not for Easy Apply bots.
+
+BATCH FLOW
+A) Capacity
+- Call RPC public.auto_apply_capacity(). If remaining_today=0, report and stop.
+
+B) Ensure materials
+- Select jobs where apply_queue_status in ('queued','materials_ready') OR (stage='saved' AND priority in ('A','B') AND moldova_eligible AND apply_mode != 'manual') ordered by priority, fit_score desc.
+- For rows missing cover_letter: generate from profile (same logic as src/lib/auto-apply.ts) and set apply_queue_status='materials_ready'.
+
+C) Resolve real apply URL
+- Open apply_url. If WithMira/Himalayas redirect → follow to company ATS URL; save company_apply_url.
+- If page requires Himalayas/LinkedIn signup to reveal ATS → search "{company} {title} careers apply" for direct ATS; save URL.
+- If cannot resolve non-LinkedIn URL → blocked_reason='No external apply URL' and continue.
+
+D) Apply by mode
+- apply_mode='email' AND careers_email present:
+  Gmail send_message to careers_email
+  subject: Application — {title} — David Beregoi
+  body: cover_letter
+  attachment: PDF (base64) filename David_Beregoi_CV.pdf mime application/pdf
+  Then mark applied.
+
+- apply_mode='ats' (default):
+  Open company_apply_url in browser.
+  Fill fields from tailored_answers / answer_bank (name, email, phone, location, salary, work auth, experience, why company).
+  Upload CV PDF when file input exists (use repo PDF path).
+  Paste cover_letter into cover letter / additional info.
+  Submit only when form is complete and no CAPTCHA.
+  On success mark applied; on wall mark blocked.
+
+- apply_mode='linkedin' or LinkedIn-only:
+  Skip / blocked — never auto-submit.
+
+E) Report
+- applied count, blocked list with reasons, remaining_today, next recommended manual unblock (if any).
+- Remind: user can say "run auto-apply batch" again tomorrow; fix blocked rows by logging into ATS once if needed.
+
+FIRST RUN CHECKLIST FOR USER (one-time, not per job)
+1. Stay logged into Gmail MCP / browser Google session as afterwayx@gmail.com
+2. Keep Cursor browser available
+3. Optional: create accounts on Lemon.io / Greenhouse once; agent reuses cookies
+4. Do NOT expect LinkedIn Easy Apply to be auto-submitted

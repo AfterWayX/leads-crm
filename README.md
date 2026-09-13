@@ -40,16 +40,17 @@ Temperatures: **HOT** 8–10 · **GOOD** 6–7 · **MAYBE** 4–5 · **IGNORE** 
 
 ## Job hunt tracker
 
-Separate from the B2B leads funnel. Nav → **Jobs**.
+Separate from the B2B leads funnel. Nav → **Jobs** / **Auto-apply**.
 
 ```bash
-# Apply migrations in Supabase (includes job_applications + seed roles)
+# Apply migrations in Supabase (includes job_applications + seed roles + auto-apply)
 # supabase db push   # or run SQL in Dashboard
 ```
 
 - Stages: `saved → applied → screening → interview → offer` (or rejected/withdrawn)
 - Fit score uses stack match, Moldova eligibility, region, salary, seniority in title
 - Curated list + rewritten CV: `docs/job-hunt/`
+- **Auto-apply:** profile + PDF + cover letters; run with `run auto-apply batch` (see `scripts/auto-apply-engine-prompt.txt`). Skips LinkedIn Easy Apply bots; uses ATS/email.
 
 ## Notes
 
