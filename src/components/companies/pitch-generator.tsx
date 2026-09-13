@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,10 +28,6 @@ export function PitchGenerator({
   const [channel, setChannel] = useState("linkedin");
   const [followUp, setFollowUp] = useState("");
   const contact = contacts.find((c) => c.id === contactId);
-
-  useEffect(() => {
-    setFollowUp(defaultFollowUpDate());
-  }, []);
 
   const funding = formatFunding(
     company.funding_amount_eur,
@@ -138,6 +134,7 @@ export function PitchGenerator({
           fd.set("subject", subject);
           fd.set("body", body);
           if (followUp) fd.set("follow_up_at", followUp);
+          else fd.set("follow_up_at", defaultFollowUpDate());
           startTransition(async () => {
             await createOutreachDraftAction(company.id, fd);
             setSaved(true);
