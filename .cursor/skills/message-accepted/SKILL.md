@@ -70,7 +70,9 @@ For each **pending** invite:
 
 ### 3. Draft DM (if none exists)
 
-Match `generateLinkedInDm` in `src/lib/templates.ts` — **≤400 chars**:
+Match `generateLinkedInDm` in `src/lib/templates.ts`. Keep it **≤400 chars**.
+
+**Writing (anti-AI tells):** never use an em dash (`—`) or en dash (`–`) in message body or subject. They read as AI. Use a period, comma, colon, or rewrite the sentence. Do not use ` - ` as a stand-in for the same pause.
 
 ```
 Hi {firstName}, thanks for connecting.
@@ -83,14 +85,14 @@ Open to a short chat if useful?
 Openers by `trigger_type`:
 - `funding` → `Congrats on the {amount/round} raise at {company}.` (or “recent raise”)
 - `hiring` → `Noticed {company} is hiring engineers ({roles}).`
-- `product_launch` → `Saw the recent launch at {company} — looks sharp.`
-- `small_team` → `Been following {company} — impressive what a lean team is shipping.`
+- `product_launch` → `Saw the recent launch at {company}. Looks sharp.`
+- `small_team` → `Been following {company}. Impressive what a lean team is shipping.`
 - default → `Been following {company}.`
 
 Offer lines by `offer_type`:
 - `team_extension` → embed senior React/Node/AI engineers…
 - `mvp` → specs to production…
-- `ai_dev` → LLM workflows, RAG, agents on React/Node…
+- `ai_dev` → production React/Next/NestJS, AI features when they fit; RAG/LLM as a supporting capability…
 - `legacy_perf` → modernize React/Node for performance…
 - default → team_extension line
 
@@ -101,7 +103,7 @@ insert into outreach (
   company_id, contact_id, channel, kind, status, subject, body, created_by
 ) values (
   '<company_id>', '<contact_id>', 'linkedin', 'message', 'draft',
-  'DM — <company>', '<body>',
+  'DM: <company>', '<body>',
   (select id from profiles order by created_at limit 1)
 );
 ```

@@ -79,9 +79,9 @@ Would you be open to a short conversation?`;
 const DM_OFFER_LINES: Record<OfferType, string> = {
   team_extension:
     "We embed senior React/Node/AI engineers with product teams that are scaling.",
-  mvp: "We help teams take specs to production — frontend, backend and AI features.",
+  mvp: "We help teams take specs to production: frontend, backend and AI features.",
   ai_dev:
-    "We build LLM workflows, RAG and agent-style automation on React/Node stacks.",
+    "I ship production React/Next.js, TypeScript and NestJS, including AI features when they fit. RAG/LLM workflows when a product actually needs them.",
   legacy_perf:
     "We modernize React/Node systems for performance without freezing product work.",
 };
@@ -97,9 +97,9 @@ function dmOpener(ctx: PitchContext): string {
         ctx.roles ? ` (${ctx.roles})` : ""
       }.`;
     case "product_launch":
-      return `Saw the recent launch at ${ctx.company} — looks sharp.`;
+      return `Saw the recent launch at ${ctx.company}. Looks sharp.`;
     case "small_team":
-      return `Been following ${ctx.company} — impressive what a lean team is shipping.`;
+      return `Been following ${ctx.company}. Impressive what a lean team is shipping.`;
     default:
       return `Been following ${ctx.company}.`;
   }
@@ -121,7 +121,7 @@ ${dmOpener(ctx)} ${offerLine}
 Open to a short chat if useful?`;
 
   return {
-    subject: `DM — ${ctx.company}`,
+    subject: `DM: ${ctx.company}`,
     body: body.slice(0, 400),
   };
 }
