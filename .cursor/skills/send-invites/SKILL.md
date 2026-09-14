@@ -55,8 +55,8 @@ For each queued invite up to `remaining`:
    where id = '<outreach_id>';
 
    update companies
-   set stage = 'contacted'
-   where id = '<company_id>' and stage in ('found', 'qualified');
+   set stage = 'invite_sent'
+   where id = '<company_id>' and stage in ('found', 'qualified', 'contacted');
    ```
 
 Pace: short pause between profiles; stop early if LinkedIn rate-limits or challenges appear — report what was sent and what remains.

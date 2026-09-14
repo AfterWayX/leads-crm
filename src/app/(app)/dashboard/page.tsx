@@ -35,8 +35,8 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="text-sm text-zinc-500">
-            Funnel: found → qualified → contacted → replies → calls →
-            opportunities → clients
+            Funnel: found → qualified → invite sent → message sent →
+            replies → calls → opportunities → clients
           </p>
         </div>
         <Button asChild>

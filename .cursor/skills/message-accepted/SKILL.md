@@ -120,6 +120,11 @@ For each accepted contact with a draft/approved message (and LinkedIn URL):
    update outreach
    set status = 'sent', sent_at = now(), kind = 'message'
    where id = '<message_outreach_id>';
+
+   update companies
+   set stage = 'message_sent'
+   where id = '<company_id>'
+     and stage in ('found', 'qualified', 'contacted', 'invite_sent');
    ```
 5. If LinkedIn blocks messaging or UI fails → leave as `draft`/`approved`, note in report, continue
 

@@ -26,7 +26,9 @@ export const TRIGGER_LABELS: Record<TriggerType, string> = {
 export const STAGE_LABELS: Record<string, string> = {
   found: "Found",
   qualified: "Qualified",
-  contacted: "Contacted",
+  invite_sent: "Invite sent",
+  message_sent: "Message sent",
+  contacted: "Contacted", // legacy — migrated to invite_sent / message_sent
   replied: "Replied",
   call: "Call",
   opportunity: "Opportunity",

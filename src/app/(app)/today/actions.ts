@@ -125,9 +125,9 @@ export async function markInviteSentAction(id: string, companyId: string) {
 
   await supabase
     .from("companies")
-    .update({ stage: "contacted" })
+    .update({ stage: "invite_sent" })
     .eq("id", companyId)
-    .in("stage", ["found", "qualified"]);
+    .in("stage", ["found", "qualified", "contacted"]);
 
   revalidateToday(companyId);
   return { ok: true };
@@ -278,9 +278,9 @@ export async function markMessageSentAction(id: string, companyId: string) {
 
   await supabase
     .from("companies")
-    .update({ stage: "contacted" })
+    .update({ stage: "message_sent" })
     .eq("id", companyId)
-    .in("stage", ["found", "qualified"]);
+    .in("stage", ["found", "qualified", "contacted", "invite_sent"]);
 
   revalidateToday(companyId);
   return { ok: true };

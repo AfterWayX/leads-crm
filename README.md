@@ -19,7 +19,7 @@ pnpm dev
 
 ## Funnel stages
 
-`found → qualified → contacted → replied → call → opportunity → proposal → client` (or `lost`)
+`found → qualified → invite_sent → message_sent → replied → call → opportunity → proposal → client` (or `lost`)
 
 ## Scoring (max 10)
 

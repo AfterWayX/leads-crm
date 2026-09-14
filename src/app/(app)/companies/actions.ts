@@ -308,21 +308,27 @@ export async function updateOutreachStatusAction(
   const { error } = await supabase.from("outreach").update(patch).eq("id", id);
   if (error) return { error: error.message };
 
-  if (
-    (status === "pending" || status === "sent" || status === "accepted") &&
-    companyId
-  ) {
-    await supabase
-      .from("companies")
-      .update({ stage: "contacted" })
-      .eq("id", companyId)
-      .in("stage", ["found", "qualified"]);
-  }
-  if (status === "replied" && companyId) {
-    await supabase
-      .from("companies")
-      .update({ stage: "replied" })
-      .eq("id", companyId);
+  if (companyId) {
+    if (status === "pending" || status === "accepted") {
+      await supabase
+        .from("companies")
+        .update({ stage: "invite_sent" })
+        .eq("id", companyId)
+        .in("stage", ["found", "qualified", "contacted"]);
+    }
+    if (status === "sent") {
+      await supabase
+        .from("companies")
+        .update({ stage: "message_sent" })
+        .eq("id", companyId)
+        .in("stage", ["found", "qualified", "contacted", "invite_sent"]);
+    }
+    if (status === "replied") {
+      await supabase
+        .from("companies")
+        .update({ stage: "replied" })
+        .eq("id", companyId);
+    }
   }
 
   revalidatePath("/outreach");

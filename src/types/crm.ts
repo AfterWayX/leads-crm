@@ -1,7 +1,8 @@
 export const FUNNEL_STAGES = [
   "found",
   "qualified",
-  "contacted",
+  "invite_sent",
+  "message_sent",
   "replied",
   "call",
   "opportunity",
