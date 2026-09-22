@@ -20,8 +20,12 @@ import {
 } from "@/components/ui/card";
 import {
   JOB_STAGE_LABELS,
+  RECRUITER_STAGE_LABELS,
   type JobApplication,
+  type JobContact,
+  type JobOutreach,
   type JobStage,
+  type RecruiterStage,
 } from "@/types/crm";
 import { APPLY_QUEUE_LABELS, type ApplyQueueStatus } from "@/lib/auto-apply";
 
@@ -30,14 +34,31 @@ type Params = Promise<{ id: string }>;
 export default async function JobDetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("job_applications")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const [{ data, error }, { data: contacts }, { data: outreach }] =
+    await Promise.all([
+      supabase
+        .from("job_applications")
+        .select("*")
+        .eq("id", id)
+        .single(),
+      supabase
+        .from("job_contacts")
+        .select("*")
+        .eq("job_application_id", id)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("job_outreach")
+        .select("*")
+        .eq("job_application_id", id)
+        .order("created_at", { ascending: false }),
+    ]);
 
   if (error || !data) notFound();
   const job = data as JobApplication;
+  const recruiter = (contacts?.[0] || null) as JobContact | null;
+  const recruiterOutreach = (outreach || []) as JobOutreach[];
+  const invite = recruiterOutreach.find((item) => item.kind === "invite");
+  const message = recruiterOutreach.find((item) => item.kind === "message");
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -82,6 +103,44 @@ export default async function JobDetailPage({ params }: { params: Params }) {
         </CardHeader>
         <CardContent>
           <JobStageButtons id={job.id} current={String(job.stage)} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recruiter outreach</CardTitle>
+          <CardDescription>
+            {RECRUITER_STAGE_LABELS[
+              job.recruiter_stage as RecruiterStage
+            ] || job.recruiter_stage}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          {recruiter ? (
+            <div>
+              {recruiter.linkedin_url ? (
+                <a
+                  href={recruiter.linkedin_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-medium text-blue-600 hover:underline"
+                >
+                  {recruiter.name}
+                </a>
+              ) : (
+                <p className="font-medium">{recruiter.name}</p>
+              )}
+              {recruiter.title && (
+                <p className="text-xs text-zinc-500">{recruiter.title}</p>
+              )}
+            </div>
+          ) : (
+            <p className="text-zinc-500">No recruiter added yet.</p>
+          )}
+          <div className="flex flex-wrap gap-3 text-xs text-zinc-500">
+            <span>Invite: {invite?.status || "not created"}</span>
+            <span>Message: {message?.status || "not created"}</span>
+          </div>
         </CardContent>
       </Card>
 

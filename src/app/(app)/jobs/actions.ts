@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { computeJobFit } from "@/lib/jobs";
+import { RECRUITER_STAGES } from "@/types/crm";
 
 function emptyToNull(v: FormDataEntryValue | null): string | null {
   const s = String(v ?? "").trim();
@@ -134,6 +135,28 @@ export async function updateJobStageAction(id: string, stage: string) {
 
   revalidatePath("/jobs");
   revalidatePath(`/jobs/${id}`);
+  return { ok: true };
+}
+
+export async function updateRecruiterStageAction(
+  id: string,
+  recruiterStage: string
+) {
+  if (!RECRUITER_STAGES.includes(recruiterStage as (typeof RECRUITER_STAGES)[number])) {
+    return { error: "Invalid recruiter stage" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("job_applications")
+    .update({ recruiter_stage: recruiterStage })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/jobs/recruiters");
+  revalidatePath(`/jobs/${id}`);
+  revalidatePath("/jobs");
   return { ok: true };
 }
 

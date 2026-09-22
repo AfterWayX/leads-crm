@@ -13,8 +13,9 @@ When the user asks to send invites, **execute immediately**. Do not ask whether 
 
 ## Caps & rules
 
-- **10 invites/day**, **80/week** — check RPC first: `select public.invite_capacity();`
+- **10 total LinkedIn invites/day**, **80/week** — this cap is shared with recruiter invites; check RPC first: `select public.invite_capacity();`
 - `remaining = min(remaining_today, remaining_week)`. If 0 → report capacity and stop.
+- Re-run `public.invite_capacity()` immediately before every browser send and after each confirmed send; recruiter invites in `job_outreach` are included.
 - **One contact per company** (no second invite while company has queued/pending/accepted invite)
 - **21-day** re-invite cooldown per contact
 - Invites are **always without a note** (`Send without a note`)
@@ -28,7 +29,7 @@ When the user asks to send invites, **execute immediately**. Do not ask whether 
 select public.invite_capacity();
 ```
 
-Load queued invites (`kind='invite'`, `status='queued'`) with contact LinkedIn URL, company name, score.
+Load queued B2B invites (`outreach.kind='invite'`, `outreach.status='queued'`) with contact LinkedIn URL, company name, score. Recruiter invites live in `job_outreach` and are handled by the recruiter-outreach skill.
 
 If fewer queued than `remaining`, top up the queue (same eligibility as `src/lib/invites.ts` / `/today` batch):
 - Contact has `linkedin_url`

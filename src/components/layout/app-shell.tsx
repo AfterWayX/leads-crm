@@ -10,6 +10,7 @@ const NAV = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/companies", label: "Companies" },
   { href: "/jobs", label: "Jobs" },
+  { href: "/jobs/recruiters", label: "Recruiters" },
   { href: "/jobs/auto-apply", label: "Auto-apply" },
   { href: "/pipeline", label: "Pipeline" },
   { href: "/outreach", label: "Outreach" },

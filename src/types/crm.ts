@@ -229,6 +229,7 @@ export type JobApplication = {
   fit_score: number;
   temperature: Temperature | string | null;
   stage: JobStage | string;
+  recruiter_stage: RecruiterStage | string;
   priority: JobPriority | string;
   notes: string | null;
   applied_at: string | null;
@@ -246,6 +247,57 @@ export type JobApplication = {
   blocked_reason?: string | null;
   last_apply_attempt_at?: string | null;
   apply_result?: string | null;
+};
+
+export const RECRUITER_STAGES = [
+  "to_find",
+  "recruiter_found",
+  "invite_sent",
+  "accepted",
+  "message_sent",
+  "replied",
+  "no_recruiter",
+] as const;
+
+export type RecruiterStage = (typeof RECRUITER_STAGES)[number];
+
+export const RECRUITER_STAGE_LABELS: Record<RecruiterStage, string> = {
+  to_find: "To find",
+  recruiter_found: "Recruiter found",
+  invite_sent: "Invite sent",
+  accepted: "Accepted",
+  message_sent: "Message sent",
+  replied: "Replied",
+  no_recruiter: "No recruiter",
+};
+
+export type JobContact = {
+  id: string;
+  job_application_id: string;
+  name: string;
+  title: string | null;
+  linkedin_url: string | null;
+  email: string | null;
+  linkedin_verified: boolean;
+  created_at: string;
+};
+
+export type JobOutreach = {
+  id: string;
+  job_application_id: string;
+  job_contact_id: string | null;
+  channel: OutreachChannel | string;
+  kind: OutreachKind | string;
+  status: OutreachStatus | string;
+  subject: string | null;
+  body: string | null;
+  scheduled_at: string | null;
+  sent_at: string | null;
+  replied_at: string | null;
+  follow_up_at: string | null;
+  response_notes: string | null;
+  created_by: string | null;
+  created_at: string;
 };
 
 export type JobApplicationStats = {

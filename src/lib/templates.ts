@@ -1,4 +1,9 @@
-import type { OfferType, TriggerType } from "@/types/crm";
+import type {
+  JobApplication,
+  JobContact,
+  OfferType,
+  TriggerType,
+} from "@/types/crm";
 
 export type PitchContext = {
   name: string;
@@ -123,5 +128,53 @@ Open to a short chat if useful?`;
   return {
     subject: `DM: ${ctx.company}`,
     body: body.slice(0, 400),
+  };
+}
+
+function firstName(name: string): string {
+  return (name || "there").trim().split(/\s+/)[0] || "there";
+}
+
+function truncateBelow(value: string, exclusiveLimit: number): string {
+  const normalized = value.trim();
+  if (normalized.length < exclusiveLimit) return normalized;
+
+  const maxLength = exclusiveLimit - 1;
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+function appliedDate(job: JobApplication): string {
+  if (!job.applied_at) return "recently";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${job.applied_at}T00:00:00Z`));
+}
+
+export function generateRecruiterInviteNote(
+  job: JobApplication,
+  contact: JobContact
+): string {
+  const note = `Hi ${firstName(contact.name)}, I applied for the ${job.title} role at ${job.company_name}. I'd be glad to connect and share relevant experience.`;
+  return truncateBelow(note, 200);
+}
+
+export function generateRecruiterDm(
+  job: JobApplication,
+  contact: JobContact
+): {
+  subject: string;
+  body: string;
+} {
+  const name = truncateBelow(firstName(contact.name), 40);
+  const title = truncateBelow(job.title, 80);
+  const company = truncateBelow(job.company_name, 60);
+  const body = `Hi ${name}, I applied for the ${title} role at ${company} on ${appliedDate(job)}. My background in React, Next.js, TypeScript and Node.js looks relevant. Happy to share more context or answer questions.`;
+
+  return {
+    subject: `Application: ${job.title}`,
+    body: truncateBelow(body, 400),
   };
 }
