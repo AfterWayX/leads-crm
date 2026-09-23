@@ -96,7 +96,7 @@ When `apply_mode = 'email'` and `careers_email` is set:
 
 #### Mode: ats (default)
 
-1. Open `company_apply_url` in **cursor-ide-browser**
+1. Open `company_apply_url` in **cursor-ide-browser**. Snapshot with `{ interactive: true, compact: true, selector: 'form' }` (fallback `'main'`); never full-page. No screenshots unless blocked. Detect success/CAPTCHA with a `Runtime.evaluate` text check, not a new snapshot. For redirects, read `location.href` via `Runtime.evaluate`
 2. Fill fields from `tailored_answers` / `answer_bank` (name, email, phone, location, salary, work auth, experience, why company)
 3. Upload CV PDF when a file input exists
 4. Paste `cover_letter` into cover letter / additional info

@@ -40,15 +40,15 @@ If fewer queued than `remaining`, top up the queue (same eligibility as `src/lib
 
 ### 2. LinkedIn send (browser)
 
-Use **cursor-ide-browser** (local session — user must already be logged into LinkedIn).
+Use **cursor-ide-browser** (local session — user must already be logged into LinkedIn). Follow `.cursor/skills/_shared/linkedin-browser.md` (probe + JS clicks; no full snapshots/screenshots unless `unclear`).
 
 For each queued invite up to `remaining`:
 
 1. `browser_navigate` to `contact.linkedin_url`
-2. Snapshot; if already **Pending** or **Connected** → skip send, still mark CRM appropriately (pending / accepted)
-3. Click **Connect** (or **More → Connect**)
-4. Click **Send without a note** — never add a note
-5. Confirm Pending on profile when possible
+2. Run the profile probe; `pending` / `connected` → skip send, still mark CRM (pending / accepted); `blocked` → stop
+3. JS click **Connect** (or **More → Connect**)
+4. JS click **Send without a note** in the dialog — never add a note
+5. Re-run probe; confirm `pending`
 6. Update CRM immediately:
    ```sql
    update outreach

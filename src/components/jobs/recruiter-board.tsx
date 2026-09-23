@@ -60,7 +60,7 @@ export function RecruiterBoard({
             }`}
           >
             {(byStage[stage] || []).map((job) => {
-              const contact = job.job_contacts?.[0];
+              const contacts = job.job_contacts || [];
               return (
                 <div
                   key={job.id}
@@ -77,20 +77,28 @@ export function RecruiterBoard({
                     {job.company_name}
                   </Link>
                   <p className="mt-1 text-xs text-zinc-600">{job.title}</p>
-                  {contact && (
-                    <div className="mt-2">
-                      {contact.linkedin_url ? (
-                        <LinkedInContactLink
-                          name={contact.name}
-                          href={contact.linkedin_url}
-                          className="text-xs"
-                        />
-                      ) : (
-                        <p className="text-xs text-zinc-500">{contact.name}</p>
-                      )}
-                      {contact.title && (
-                        <p className="text-xs text-zinc-500">{contact.title}</p>
-                      )}
+                  {contacts.length > 0 && (
+                    <div className="mt-2 space-y-2">
+                      {contacts.map((contact) => (
+                        <div key={contact.id}>
+                          {contact.linkedin_url ? (
+                            <LinkedInContactLink
+                              name={contact.name}
+                              href={contact.linkedin_url}
+                              className="text-xs"
+                            />
+                          ) : (
+                            <p className="text-xs text-zinc-500">
+                              {contact.name}
+                            </p>
+                          )}
+                          {contact.title && (
+                            <p className="text-xs text-zinc-500">
+                              {contact.title}
+                            </p>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
                   <p className="mt-2 text-xs tabular-nums text-zinc-500">

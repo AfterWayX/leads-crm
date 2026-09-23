@@ -14,7 +14,7 @@ When the user asks to check accepts / message people who accepted, **execute imm
 ## Scope
 
 - Supabase project: `enybzqvjrjdpepikjmwl`
-- Browser: **cursor-ide-browser** (user must be logged into LinkedIn)
+- Browser: **cursor-ide-browser** (user must be logged into LinkedIn). Follow `.cursor/skills/_shared/linkedin-browser.md` (probe + JS clicks; no full snapshots/screenshots unless `unclear`)
 - Do **not** send new connection invites here (that is `send-invites`)
 
 ## Workflow
@@ -57,11 +57,13 @@ where o.kind = 'invite' and o.status = 'accepted'
 For each **pending** invite:
 
 1. Navigate to `linkedin_url`
-2. Snapshot the profile
+2. Run the profile probe
 3. Interpret:
-   - **Message** / **Connected** / 1st-degree → **accepted**
-   - **Pending** → still waiting (leave as pending)
-   - **Connect** again / invite gone without connection → mark `ignored` if clearly withdrawn/expired; otherwise leave pending
+   - `connected` → **accepted**
+   - `pending` → still waiting (leave as pending)
+   - `connect` → invite gone without connection: mark `ignored` if clearly withdrawn/expired; otherwise leave pending
+   - `unclear` → one scoped snapshot; still unclear → leave pending
+   - `blocked` → stop and report
 4. On accept, update CRM:
    ```sql
    update outreach set status = 'accepted', kind = 'invite'
@@ -112,9 +114,9 @@ insert into outreach (
 
 For each accepted contact with a draft/approved message (and LinkedIn URL):
 
-1. Open profile → click **Message**
-2. Paste the draft body into the composer (do not invent a longer pitch)
-3. Send
+1. Open profile → JS click **Message**
+2. Paste the draft body into the composer via scoped snapshot ref (do not invent a longer pitch)
+3. Send, then run the verify-sent probe
 4. Mark CRM:
    ```sql
    update outreach

@@ -29,7 +29,7 @@ Submit Easy Apply for up to N matching jobs (default 20). Track `/tmp/easy-apply
 - English: Yes; GCP/cloud: Yes when asked
 
 ## Browser
-Use `cursor-ide-browser` tab locked on LinkedIn Jobs with `f_AL=true&f_WT=2`. Prefer CDP click when UI intercepts. After submit, confirm "application was sent", dismiss "Not now", append progress.
+Use `cursor-ide-browser` tab locked on LinkedIn Jobs with `f_AL=true&f_WT=2`. Prefer CDP click when UI intercepts. Token rules from `.cursor/skills/_shared/linkedin-browser.md`: scoped snapshots only (`{ interactive: true, compact: true, selector: '[role="dialog"]' }` for the Easy Apply modal), extract job lists via `Runtime.evaluate` (cap 10), no screenshots. After submit, confirm "application was sent", dismiss "Not now", append progress.
 
 ## Skip/block
 - Image-only resume uploads

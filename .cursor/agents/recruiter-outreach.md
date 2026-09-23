@@ -31,6 +31,7 @@ Implement and run the job-application recruiter outreach workflow in this reposi
 
 ## Constraints
 - Use the local browser session only when the user is logged in.
+- Follow `.cursor/skills/_shared/linkedin-browser.md`: profile probe + JS clicks, no full snapshots or screenshots unless the probe returns `unclear`.
 - Do not send a message before acceptance.
 - Do not send more than the remaining shared daily or weekly capacity.
 - Do not create another contact or outreach row when one already exists for the same job and verified LinkedIn URL/contact, regardless of status.

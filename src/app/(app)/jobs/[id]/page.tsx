@@ -55,7 +55,7 @@ export default async function JobDetailPage({ params }: { params: Params }) {
 
   if (error || !data) notFound();
   const job = data as JobApplication;
-  const recruiter = (contacts?.[0] || null) as JobContact | null;
+  const recruiters = (contacts || []) as JobContact[];
   const recruiterOutreach = (outreach || []) as JobOutreach[];
   const invite = recruiterOutreach.find((item) => item.kind === "invite");
   const message = recruiterOutreach.find((item) => item.kind === "message");
@@ -116,23 +116,27 @@ export default async function JobDetailPage({ params }: { params: Params }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          {recruiter ? (
-            <div>
-              {recruiter.linkedin_url ? (
-                <a
-                  href={recruiter.linkedin_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  {recruiter.name}
-                </a>
-              ) : (
-                <p className="font-medium">{recruiter.name}</p>
-              )}
-              {recruiter.title && (
-                <p className="text-xs text-zinc-500">{recruiter.title}</p>
-              )}
+          {recruiters.length > 0 ? (
+            <div className="space-y-3">
+              {recruiters.map((recruiter) => (
+                <div key={recruiter.id}>
+                  {recruiter.linkedin_url ? (
+                    <a
+                      href={recruiter.linkedin_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-blue-600 hover:underline"
+                    >
+                      {recruiter.name}
+                    </a>
+                  ) : (
+                    <p className="font-medium">{recruiter.name}</p>
+                  )}
+                  {recruiter.title && (
+                    <p className="text-xs text-zinc-500">{recruiter.title}</p>
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
             <p className="text-zinc-500">No recruiter added yet.</p>

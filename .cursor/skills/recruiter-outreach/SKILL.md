@@ -15,7 +15,7 @@ When the user asks to find recruiters for jobs they applied to or contact recrui
 ## Scope
 
 - Supabase project: `enybzqvjrjdpepikjmwl`
-- Browser: `cursor-ide-browser` with the user's logged-in LinkedIn session
+- Browser: `cursor-ide-browser` with the user's logged-in LinkedIn session. Follow `.cursor/skills/_shared/linkedin-browser.md` (probe + JS clicks + JS extraction of search results; no full snapshots/screenshots unless `unclear`)
 - Tables: `job_applications`, `job_contacts`, `job_outreach`
 - Only process jobs with `stage in ('applied', 'screening', 'interview')`
 - The invite cap is shared with B2B invites: 10/day and 80/week
@@ -67,11 +67,11 @@ Stop if LinkedIn shows a challenge, rate limit, login prompt, or ambiguous state
 
 ## 4. Check acceptance and send the job message
 
-For pending recruiter invites, open each LinkedIn profile:
+For pending recruiter invites, open each LinkedIn profile and run the profile probe:
 
-- A visible `Message`, `Connected`, or `1st`-degree state on the profile means accepted; do not infer acceptance from search results or a missing Connect button.
-- `Pending` means leave the invite pending.
-- An unclear state means leave it pending and report it.
+- `connected` means accepted; do not infer acceptance from search results or a missing Connect button.
+- `pending` means leave the invite pending.
+- `unclear` after one scoped snapshot means leave it pending and report it.
 
 When accepted:
 
